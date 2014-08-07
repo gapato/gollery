@@ -5,6 +5,8 @@
 
 body {
 	margin: 0;
+	font-family: sans;
+	background-color: #333;
 
 	@include respond-to('tablet') {
 		font-size: 200%;
@@ -24,14 +26,17 @@ div {
 	-webkit-overflow-scrolling: touch;
 }
 
+a {
+	color: white;
+	text-decoration: none;
+}
+
 .album-frame {
 	float: left;
 	width: 220px;
 	height: 220px;
 	margin: 1%;
-	border: 1px solid black;
 	padding: 0;
-	background-color: white;
 	text-align: center;
 	margin-bottom: 2em;
 }
@@ -44,6 +49,10 @@ div {
 	clear: right;
 }
 
+.album-frame-inner img {
+	box-shadow: 0 0 5px black;
+}
+
 .album-frame-title {
 	display: block;
 	margin-top: .5em;
@@ -54,9 +63,7 @@ div {
 	width: 220px;
 	height: 220px;
 	margin: 1%;
-	border: 1px solid black;
 	padding: 0;
-	background-color: white;
 }
 
 .picture-frame-inner {
@@ -65,6 +72,10 @@ div {
 	text-align: center;
 	vertical-align: middle;
 	display: table-cell;
+}
+
+.picture-frame-inner img {
+	box-shadow: 0 0 5px black;
 }
 
 .ui-pane {
@@ -164,6 +175,9 @@ div {
 	height: auto;
 	max-width: 100%;
 	max-height: 100%;
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
 }
 
 #viewer-toolbar {
