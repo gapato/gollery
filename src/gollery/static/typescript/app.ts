@@ -177,7 +177,22 @@ class App {
 	}
 
 	static albumCompareFunc(a: Album, b: Album): number {
-		return a.name.localeCompare(b.name);
+		var re = /.*\((\d{4})\)/;
+		var y1m = re.exec(a.name);
+		var y2m = re.exec(b.name);
+		var y1 = 0;
+		var y2 = 0;
+		if (y1m) {
+			y1 = parseInt(y1m[1]);
+		}
+		if (y2m) {
+			y2 = parseInt(y2m[1]);
+		}
+		if (y1 == y2) {
+			return a.name.localeCompare(b.name);
+		} else {
+			return y2 - y1;
+		}
 	}
 
 	static sortPicturesByDate(pictures: Picture[]): void {
