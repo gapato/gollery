@@ -71,9 +71,11 @@ class Viewer {
 		}
 
 		var $viewer_img = $('#viewer-img');
+        var $viewer_throbber = $('#viewer-throbber');
 
 		$viewer_img.load(() => {
 			this.loadSiblings();
+            $viewer_throbber.hide();
 		});
 
 		$viewer_img.on('error', () => {
@@ -86,6 +88,7 @@ class Viewer {
 	}
 
 	goBackToAlbums(): void {
+        $('viewer-throbber').hide();
 		if (!this.album) {
 			this.app.navigate('');
 			return;
@@ -112,6 +115,7 @@ class Viewer {
 		}
 
 		$('#viewer-img').attr('src', Viewer.emptyPixel);
+        $('#viewer-throbber').show();
 		$('#viewer-img').attr('src', this.pictureUrl(filename));
 	}
 
