@@ -151,10 +151,10 @@ class App {
 
 	// Wrapper arround $.getJSON that handles the logging screen
 	loadJSON(url: string, callback: any): JQueryXHR {
-		LoadingScreen.push();
+		//LoadingScreen.push();
 
 		var jqxhr = $.getJSON(url, () => {
-			LoadingScreen.pop();
+			//LoadingScreen.pop();
 
 			var args = Array.prototype.slice.apply(arguments);
 			callback.apply(this, args);

@@ -21,12 +21,15 @@ class PictureFrame {
 
 		frame.appendChild(a);
 
-		LoadingScreen.push();
+		var span = document.createElement('span');
+		span.className = 'loading';
+
+		a.appendChild(span);
 
 		var img = document.createElement('img');
 
 		img.addEventListener('load', () => {
-			LoadingScreen.pop();
+			span.className = '';
 		});
 
 		img.addEventListener('error', () => {
@@ -36,7 +39,7 @@ class PictureFrame {
 		img.src = url;
 		img.setAttribute('title', pic.path);
 
-		a.appendChild(img);
+		span.appendChild(img);
 
 		this.el = frame;
 	}

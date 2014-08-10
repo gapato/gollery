@@ -21,12 +21,15 @@ class AlbumFrame {
 
 		frame.appendChild(a);
 
-		LoadingScreen.push();
+		var span = document.createElement('span');
+		span.className = 'loading';
+
+		a.appendChild(span);
 
 		var img = document.createElement('img');
 
 		img.addEventListener('load', function() {
-			LoadingScreen.pop();
+			span.className = '';
 		});
 
 		img.addEventListener('error', function() {
@@ -39,7 +42,7 @@ class AlbumFrame {
 			img.src = Common.pictureUrl('small', album.cover);
 		}
 
-		a.appendChild(img);
+		span.appendChild(img);
 
 		var titleFrame = document.createElement('a');
 		titleFrame.href = href;
