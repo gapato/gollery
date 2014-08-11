@@ -175,7 +175,7 @@ span.loading img {
 .vcenter {
 	position: relative;
 	top: 50%;
-	transform: translateY(-50%);
+	@include translateY(-50%);
 }
 
 #preload {
