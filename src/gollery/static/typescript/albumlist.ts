@@ -13,7 +13,12 @@ class AlbumList {
 		$list.html('');
 
 		$.each(albums, (idx, album) => {
-			var href = '#browse:' + album.name;
+			var href;
+			if (album.hasSubdirs) {
+				href = '#nav:' + album.name;
+			} else {
+				href = '#browse:' + album.name;
+			}
 			var albumFrame = new AlbumFrame(this.app, album, href);
 
 			$list.append(albumFrame.el);

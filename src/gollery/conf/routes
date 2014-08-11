@@ -9,12 +9,14 @@ module:jobs
 # Ignore favicon requests
 GET     /favicon.ico                            404
 
-GET     /albums                                 Albums.Index()
-GET     /albums/*name                           Albums.Show()
+GET     /albums                                 Albums.Index("")
+GET     /albums/*name                           Albums.Index
+GET     /rolls/*name                            Albums.Show
+GET     /dl/:size/*name                         Albums.Download
 
-GET     /thumbnails/:size/*name                 Thumbnails.Thumbnail()
+GET     /thumbnails/:size/*name                 Thumbnails.Thumbnail
 
-GET     /status                                 Status.Status()
+GET     /status                                 Status.Status
 
 GET     /*filepath                              Static.Serve("static")
 GET     /                                       Static.Serve("static","index.html")

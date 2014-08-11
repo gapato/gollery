@@ -21,6 +21,7 @@ type Albums struct {
 type AlbumInfo struct {
 	Name  string `json:"name"`
 	Cover string `json:"cover"`
+	HasSubdirs bool   `json:"hasSubdirs"`
 }
 
 type AlbumData struct {
@@ -64,7 +65,8 @@ var ExifKeys = []string{
 	"Exif.GPSInfo.GPSLongitude",
 }
 
-func (c *Albums) Index() revel.Result {
+func (c *Albums) Index(name string) revel.Result {
+	revel.INFO.Printf("Navigating album %s", name)
 	watchedPaths := app.Monitor.WatchedDirectories()
 	dirs := make([]*AlbumInfo, 0, len(watchedPaths))
 
@@ -74,6 +76,9 @@ func (c *Albums) Index() revel.Result {
 		}
 
 		dir = dir[1+len(common.RootDir):]
+		if dir == name || !strings.HasPrefix(dir, name) || strings.LastIndex(dir, "/") > len(name) {
+			continue
+		}
 
 		cover, err := c.getAlbumCover(dir)
 
@@ -81,9 +86,16 @@ func (c *Albums) Index() revel.Result {
 			revel.ERROR.Printf("Cannot lookup cover for album '%s': %s", dir, err)
 		}
 
+		super, err :=  c.hasSubdirs(dir)
+
+		if err != nil {
+			revel.ERROR.Printf("Cannot determine if album '%s' has subdirectories: %s", dir, err)
+		}
+
 		dirs = append(dirs, &AlbumInfo{
 			Name:  dir,
 			Cover: cover,
+			HasSubdirs: super,
 		})
 	}
 
@@ -93,7 +105,7 @@ func (c *Albums) Index() revel.Result {
 }
 
 func (c *Albums) getAlbumCover(name string) (string, error) {
-	fis, err := c.listPictures(name)
+	fis, err := c.listPictures(name, true)
 
 	if len(fis) == 0 {
 		return "", nil
@@ -105,7 +117,7 @@ func (c *Albums) getAlbumCover(name string) (string, error) {
 
 	for i := 0; i < 10; i++ {
 		fi := fis[rand.Int31n(int32(len(fis)))]
-		filePath := path.Join(name, fi.Name())
+		filePath := path.Join(name, fi)
 
 		hasThumbnail, err := app.Thumbnailer.HasThumbnail(filePath, thumbnailer.THUMB_SMALL)
 
@@ -157,7 +169,35 @@ func getMetadata(filePath string) (map[string]string, error) {
 	return metadata, nil
 }
 
-func (c *Albums) listPictures(name string) ([]os.FileInfo, error) {
+func (c *Albums) hasSubdirs(name string) (bool, error) {
+	dirPath := path.Join(common.RootDir, name)
+	dirFd, err := os.Open(dirPath)
+
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, utils.WrapError(err, "Cannot open folder")
+	}
+
+	defer dirFd.Close()
+
+	fis, err := dirFd.Readdir(-1)
+
+	if err != nil {
+		return false, utils.WrapError(err, "Cannot list folder")
+	}
+
+	for _, fi := range fis {
+		if fi.IsDir() {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func (c *Albums) listPictures(name string, recurse bool) ([]string, error) {
 	dirPath := path.Join(common.RootDir, name)
 	dirFd, err := os.Open(dirPath)
 
@@ -177,13 +217,42 @@ func (c *Albums) listPictures(name string) ([]os.FileInfo, error) {
 		return nil, utils.WrapError(err, "Cannot list folder")
 	}
 
-	return fis, nil
+	var filteredFis []string
+	var subDirs  []string
+	var ext string
+
+	for _, fi := range fis {
+		if fi.IsDir() {
+			subDirs = append(subDirs, fi.Name())
+			continue
+		}
+		ext = strings.ToLower(path.Ext(fi.Name()))
+		for _, allowedExt := range common.ImageExts {
+			if strings.EqualFold(ext, allowedExt) {
+				filteredFis = append(filteredFis, fi.Name())
+				break
+			}
+		}
+	}
+
+	if len(filteredFis) == 0 && recurse && len(subDirs) > 0 {
+		for _, dirName := range subDirs {
+			recImgs, err := c.listPictures(path.Join(name, dirName), true)
+			if err == nil {
+				for _, img := range recImgs {
+					filteredFis = append(filteredFis, path.Join(dirName, img))
+				}
+			}
+		}
+	}
+
+	return filteredFis, nil
 }
 
 func (c *Albums) Show(name string) revel.Result {
 	revel.INFO.Printf("Loading album %s", name)
 
-	fis, err := c.listPictures(name)
+	fis, err := c.listPictures(name, false)
 
 	if err != nil {
 		c.Response.Status = http.StatusInternalServerError
@@ -198,7 +267,7 @@ func (c *Albums) Show(name string) revel.Result {
 	dirPath := path.Join(common.RootDir, name)
 
 	for _, info := range fis {
-		filePath := path.Join(dirPath, info.Name())
+		filePath := path.Join(dirPath, info)
 
 		hasThumbnail, err := app.Thumbnailer.HasThumbnail(filePath, thumbnailer.THUMB_SMALL)
 
@@ -219,7 +288,7 @@ func (c *Albums) Show(name string) revel.Result {
 		}
 
 		picInfo := &PictureInfo{
-			Path:     info.Name(),
+			Path:     info,
 			Metadata: metadata,
 		}
 
@@ -228,3 +297,9 @@ func (c *Albums) Show(name string) revel.Result {
 
 	return c.RenderJson(albumData)
 }
+
+func (c *Albums) Download(size, name string) revel.Result {
+	return c.Todo()
+}
+
+// vim: noexpandtab

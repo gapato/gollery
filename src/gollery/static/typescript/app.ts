@@ -24,6 +24,7 @@ class App {
 
 	private static HashRoutes: Object = {
 		'browse': 'browseAlbum',
+		'nav': 'navigateSubalbum',
 		'view': 'viewPicture'
 	}
 
@@ -39,7 +40,7 @@ class App {
 		this.listMapFlipper = new Flipper('#browser-content-flipper');
 		this.viewer = new Viewer(this);
 
-		this.loadAlbums();
+		this.loadAlbums('');
 
 		this.setUiMode('album-list');
 
@@ -92,6 +93,7 @@ class App {
 		}
 
 		if (hash === '') {
+			this.loadAlbums('');
 			this.setUiMode('album-list');
 			return;
 		}
@@ -167,13 +169,19 @@ class App {
 		return jqxhr;
 	}
 
-	loadAlbums(): void {
+	loadAlbums(prefix: string): void {
 		var albumList = $('#album-list');
 
-		this.loadJSON('/albums/', (data) => {
+		this.loadJSON('/albums/' + prefix, (data) => {
 			data.sort(App.albumCompareFunc);
 			this.albumList.update(data);
 		});
+	}
+
+	navigateSubalbum(name: string): void {
+		console.log(name);
+		this.loadAlbums(name);
+		this.setUiMode('album-list');
 	}
 
 	static albumCompareFunc(a: Album, b: Album): number {
@@ -341,7 +349,7 @@ class App {
 			return;
 		}
 
-		this.loadJSON('/albums/' + name, (data) => {
+		this.loadJSON('/rolls/' + name, (data) => {
 			App.sortPicturesByDate(data.pictures);
 			App.parseGpsMetadata(data.pictures);
 

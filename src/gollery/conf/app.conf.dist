@@ -24,6 +24,9 @@ gollery.root_dir = /where/my/pictures/are
 # things. This directory must exist for gollery to be happy.
 gollery.cache_dir = /where/stuff/will/be/cached
 
+# Allowed file extensions for images
+gollery.image_exts = .jpg,.jpeg,.png
+
 ###############################################################################
 # No serviceable parts beyond this line
 ###############################################################################

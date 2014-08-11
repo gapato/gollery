@@ -7,10 +7,13 @@ import (
 )
 
 const (
-	GOLLERY_CONFIG_ROOT_DIR  = "gollery.root_dir"
-	GOLLERY_CONFIG_CACHE_DIR = "gollery.cache_dir"
-	GOLLERY_SESSION_USER     = "user"
+	GOLLERY_CONFIG_ROOT_DIR   = "gollery.root_dir"
+	GOLLERY_CONFIG_CACHE_DIR  = "gollery.cache_dir"
+	GOLLERY_CONFIG_IMAGE_EXTS = "gollery.image_exts"
+	GOLLERY_SESSION_USER      = "user"
 )
+
+var ImageExts []string
 
 var RootDir string
 

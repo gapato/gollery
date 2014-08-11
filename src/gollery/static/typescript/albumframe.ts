@@ -49,7 +49,8 @@ class AlbumFrame {
 		titleFrame.className = 'album-frame-title';
 		frame.appendChild(titleFrame);
 
-		titleFrame.appendChild(document.createTextNode(album.name));
+		var title = album.name.slice(album.name.lastIndexOf('/')+1);
+		titleFrame.appendChild(document.createTextNode(title));
 
 		this.el = frame;
 	}

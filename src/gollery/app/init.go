@@ -7,6 +7,7 @@ import (
 	"gollery/monitor"
 	"gollery/thumbnailer"
 	"runtime"
+	"strings"
 )
 
 var Monitor *monitor.Monitor
@@ -55,6 +56,14 @@ func initServices() {
 	if !found {
 		panic("Missing configuration parameter: " + common.GOLLERY_CONFIG_CACHE_DIR)
 	}
+
+	exts, found := revel.Config.String(common.GOLLERY_CONFIG_IMAGE_EXTS)
+
+	if !found {
+		panic("Missing configuration parameter: " + common.GOLLERY_CONFIG_IMAGE_EXTS)
+	}
+
+	common.ImageExts = strings.Split(exts, ",")
 
 	var err error
 
