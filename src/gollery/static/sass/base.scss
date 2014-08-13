@@ -226,6 +226,11 @@ span.loading img {
 		text-align: center;
 	}
 
+	.spinner div.stopped {
+		animation-play-state: initial;
+		-webbit-animation-play-state: initial;
+	}
+
 	.spinner > div {
 		width: 18px;
 		height: 18px;
@@ -238,6 +243,9 @@ span.loading img {
 		/* Prevent first frame from flickering when animation starts */
 		-webkit-animation-fill-mode: both;
 		animation-fill-mode: both;
+
+		animation-play-state: running;
+		-webbit-animation-play-state: running;
 	}
 
 	.spinner .bounce1 {
