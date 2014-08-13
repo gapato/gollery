@@ -28,18 +28,19 @@ class AlbumFrame {
 
 		var img = document.createElement('img');
 
-		img.addEventListener('load', function() {
+		img.addEventListener('load', () => {
 			span.className = '';
 		});
 
-		img.addEventListener('error', function() {
+		img.addEventListener('error', () => {
 			app.oops('Cannot load image ' + img.src);
 		});
 
-		img.src = AlbumFrame.DefaultCoverUrl;
 
 		if (album.cover) {
 			img.src = Common.pictureUrl('small', album.cover);
+		} else {
+			img.src = AlbumFrame.DefaultCoverUrl;
 		}
 
 		span.appendChild(img);

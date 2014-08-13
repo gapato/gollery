@@ -53,6 +53,11 @@ class App {
 		});
 
 		this.dispatchHash();
+
+		$('#preload').each((i,img) => {
+			var $img = $(img);
+			$img.load(() => {$img.hide();});
+		});
 	}
 
 	getUiMode(): string {
@@ -153,10 +158,8 @@ class App {
 
 	// Wrapper arround $.getJSON that handles the logging screen
 	loadJSON(url: string, callback: any): JQueryXHR {
-		//LoadingScreen.push();
 
 		var jqxhr = $.getJSON(url, () => {
-			//LoadingScreen.pop();
 
 			var args = Array.prototype.slice.apply(arguments);
 			callback.apply(this, args);
