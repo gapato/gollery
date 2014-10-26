@@ -1,16 +1,11 @@
 #!/bin/sh
 
-if [[ "$0" == "$BASH_SOURCE" ]]; then
-	echo "Please source me in a Bash shell!"
-	exit 1
-fi
-
 case "$(uname -s)" in
 	Darwin)
-		MYDIR="$(dirname $(perl -MCwd -e "print Cwd::realpath(\"$BASH_SOURCE\")"))"
+		MYDIR="$(dirname $(perl -MCwd -e "print Cwd::realpath(\"$0\")"))"
 		;;
 	*)
-		MYDIR="$(dirname $(readlink -m $BASH_SOURCE))"
+		MYDIR="$(dirname $(readlink -m \"$0\"))"
 		;;
 esac
 
